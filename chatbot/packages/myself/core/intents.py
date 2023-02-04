@@ -11,6 +11,7 @@ INTENTS = [
         "action": welcome_message
     },
     {
+        "type": "fallback",
         "name": "help_message",
         "action": help_message
     },
