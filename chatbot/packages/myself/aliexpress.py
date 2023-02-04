@@ -30,7 +30,7 @@ def send_search_result(keywords, page, subpage, recipient_id):
     customer = customer_model.get_customer(recipient_id)
     aliexpress = AliExpress(
         REGION, customer.get("currency"), LOCALE, SITE)
-    search_results = aliexpress.search_product(keywords, page)
+    search_results = aliexpress.search_product(keywords, page)["results"]
 
     if len(search_results) == 0:
         send_api.send_text_message(
