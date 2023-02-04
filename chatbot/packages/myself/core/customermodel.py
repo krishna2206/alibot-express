@@ -34,7 +34,7 @@ class CustomerModel(Model):
 
             if "customers" not in self.db.list_collection_names():
                 try:
-                    customers.create_index((unique_identifier, ASCENDING), unique=True)
+                    customers.create_index([(unique_identifier, ASCENDING)], name=unique_identifier, unique=True)
                 except Exception as error:
                     raise Exception(f"Failed to create index \"{unique_identifier}\". {type(error).__name__} {error}")
             else:
