@@ -10,22 +10,23 @@ def create_product_elements(current_page_list):
         subtitle = f"{product['prices']['salePrice']['formattedPrice']}\n"
         if (product["trade"] is not None) or (product["rating"] is not None):
             subtitle += (
-                "{}{}".format(
+                "{}{}\n".format(
                     '' if product['trade'] is None else product['trade']['tradeDesc'],
                     '' if product['rating'] is None else f"- {product['rating']}/5"
                 )
             )
 
         selling_points = product["sellingPoints"]
-        for idx in range(len(selling_points)):
-            selling_points[idx]["tagContent"]["tagStyle"]["position"] = int(
-                selling_points[idx]["tagContent"]["tagStyle"]["position"])
-        selling_points = sorted(selling_points, key=lambda sp: sp["tagContent"]["tagStyle"]["position"])
+        if selling_points is not None:
+            for idx in range(len(selling_points)):
+                selling_points[idx]["tagContent"]["tagStyle"]["position"] = int(
+                    selling_points[idx]["tagContent"]["tagStyle"]["position"])
+            selling_points = sorted(selling_points, key=lambda sp: sp["tagContent"]["tagStyle"]["position"])
 
-        for selling_point in selling_points:
-            subtitle += (
-                f"{selling_point['tagContent']['tagText']}\n"
-            )
+            for selling_point in selling_points:
+                subtitle += (
+                    f"{selling_point['tagContent']['tagText']}\n"
+                )
 
         subtitle += f"{product['store']['storeName']}"
 
