@@ -24,9 +24,10 @@ def create_product_elements(current_page_list):
             selling_points = sorted(selling_points, key=lambda sp: sp["tagContent"]["tagStyle"]["position"])
 
             for selling_point in selling_points:
-                subtitle += (
-                    f"{selling_point['tagContent']['tagText']}\n"
-                )
+                try:
+                    subtitle += f"{selling_point['tagContent']['tagText']}\n"
+                except KeyError:
+                    continue
 
         subtitle += f"{product['store']['storeName']}"
 
