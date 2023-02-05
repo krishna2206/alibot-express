@@ -366,8 +366,8 @@ def show_estimated_price(recipient_id: str):
         else:
             variant = product["prices"][0]
 
-        curr_total_price_discount = variant["promotionalPrice"] * cart_product["quantity"] + variant["shippingFee"]
-        curr_total_price = variant["initialPrice"] * cart_product["quantity"] + variant["shippingFee"]
+        curr_total_price_discount = variant["promotionalPrice"] * cart_product["quantity"] + product["shippingFee"]
+        curr_total_price = variant["initialPrice"] * cart_product["quantity"] + product["shippingFee"]
         total_price_discount += curr_total_price_discount
         total_price += curr_total_price
         
@@ -376,14 +376,14 @@ def show_estimated_price(recipient_id: str):
         estimated_price_msg += f" 🛍 Quantité : {cart_product['quantity']}\n"
         estimated_price_msg += f" 💰 Prix total : {variant['initialPrice'] * cart_product['quantity']} {display_currency}\n"
         estimated_price_msg += f" 💰 Prix total avec réduction : {variant['promotionalPrice'] * cart_product['quantity']} {display_currency}\n"
-        estimated_price_msg += f" 🚛 Frais de livraison : {variant['shippingFee']} {display_currency}\n"
+        estimated_price_msg += f" 🚛 Frais de livraison : {product['shippingFee']} {display_currency}\n"
         estimated_price_msg += f" 🚚 Durée estimée de livraison : {variant['deliveryDetails']['deliveryDayMin']} - {variant['deliveryDetails']['deliveryDayMax']} jours\n\n"
 
     estimated_price_msg += (
-        bold(f"📦 Prix total du panier :\n") +
+        bold(f"🛒 Prix total du panier :\n") +
         f"{total_price} {display_currency} soit {total_price * exchange_rate.get(customer.get('currency'))} Ariary\n")
     estimated_price_msg += (
-        bold(f"📦 Prix total du panier avec réduction :\n") +
+        bold(f"🛒 Prix total du panier avec réduction :\n") +
         f"{total_price_discount} {display_currency} soit {total_price_discount * exchange_rate.get(customer.get('currency'))} Ariary\n")
 
     send_api.send_text_message(estimated_price_msg, recipient_id)
