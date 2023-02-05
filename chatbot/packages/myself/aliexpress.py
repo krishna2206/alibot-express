@@ -346,7 +346,6 @@ def clear_cart(recipient_id: str):
             send_api.send_text_message("Votre panier a été vidé avec succès 🛒✅", recipient_id)
 
 
-# TODO : Devis
 def show_estimated_price(recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     cart = customer["cart"]
@@ -368,7 +367,7 @@ def show_estimated_price(recipient_id: str):
         curr_total_price = variant["promotionalPrice"] * cart_product["quantity"] + product["shippingFee"]
         total_price += curr_total_price
         
-        estimated_price_msg += italic(f"• {product['title']} ({variant['variantName']}) :\n")
+        estimated_price_msg += bold(f"• {product['title']} ({variant['variantName']}) :\n")
         estimated_price_msg += f" 💰 Prix unitaire : {variant['promotionalPrice']} {display_currency}\n"
         estimated_price_msg += f" 🛍 Quantité : {cart_product['quantity']}\n"
         estimated_price_msg += f" 💰 Prix total : {round(variant['promotionalPrice'] * cart_product['quantity'], 1)} {display_currency}\n"
