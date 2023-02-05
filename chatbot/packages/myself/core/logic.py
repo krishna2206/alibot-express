@@ -70,13 +70,13 @@ def create_product_elements(current_page_list, **kwargs):
         else:
             # ? Add product to cart
             # ? Choose the number to add if the available quantity is over 1
-            if product["availQuantity"] > 1:
+            if product["prices"][0]["availQuantity"] > 1:
                 target_action = "ask_quantity_to_add"
                 payload = Payload(
                     target_action=target_action,
                     product_id=p["id"],
                     variant_id=None,
-                    max_quantity=product["availQuantity"])
+                    max_quantity=product["prices"][0]["availQuantity"])
             else:
                 target_action = "add_to_cart"
                 payload = Payload(
@@ -84,7 +84,7 @@ def create_product_elements(current_page_list, **kwargs):
                     product_id=p["id"],
                     variant_id=None,
                     quantity=1,
-                    max_quantity=product["availQuantity"])
+                    max_quantity=product["prices"][0]["availQuantity"])
             add_to_cart_button = msgr_api_components.Button(
                 button_type="postback",
                 title="🛒 Ajouter au panier")
