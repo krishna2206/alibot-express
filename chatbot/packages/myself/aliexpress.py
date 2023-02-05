@@ -1,3 +1,6 @@
+from datetime import datetime
+
+import pytz
 from split import chop
 
 import config
@@ -7,6 +10,7 @@ from chatbot.sharedinstances import send_api, msgr_api_components, user_model
 from .core import logic
 from .core.config import LOCALE, REGION, SITE
 from .core.customermodel import CustomerModel
+from .core.dependencies import bmoi_er
 from .core.dependencies.aliexpress import AliExpress
 
 customer_model = CustomerModel(config)
@@ -363,6 +367,13 @@ def update_currency(currency: str, recipient_id: str):
             recipient_id)
 
 
-# TODO : Taux de change
 def show_exchange_rate(recipient_id: str):
-    pass
+    TIMEZONE_MG = pytz.timezone("Indian/Antananarivo")
+    exchange_rate = bmoi_er.get_exchange_rate()
+    exchange_rate_msg = (
+        f"📈 Taux de change du {datetime.now(TIMEZONE_MG).strftime('%d/%m/%Y')} à {datetime.now(TIMEZONE_MG).strftime('%H:%M')} :\n\n" +
+        f"1 € = {exchange_rate.get('EUR')} Ariary\n" +
+        f"1 $ = {exchange_rate.get('USD')} Ariary")
+    send_api.send_text_message(
+        exchange_rate_msg,
+        recipient_id)

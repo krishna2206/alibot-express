@@ -101,10 +101,10 @@ def create_product_variant_elements(current_page_list, **kwargs):
     for variant in current_page_list:
         title = variant.get("variantName")
         subtitle = (
-            "{}   {} {}\n".format(
+            "{}   {}   {}\n".format(
                 f"{display_currency} {variant.get('promotionalPrice')}",
                 _to_strikethrough(f"{display_currency} {variant.get('initialPrice')}"),
-                bold('-' + str(variant.get('discount')) + '%')) +
+                bold('-' + str(variant.get('discount')) + '% de réduction')) +
             f"{variant.get('availQuantity')} dispo"
         )
 
