@@ -45,12 +45,14 @@ def create_product_elements(current_page_list, **kwargs):
                     continue
 
         subtitle += f"{p['store']['storeName']}"
+        buttons = []
 
         # ? Show product on browser
         show_product_link = msgr_api_components.Button(
             button_type="web_url",
             title="🌐 Voir le produit")
         show_product_link.set_url(f"https://fr.aliexpress.com/item/{p['id']}.html")
+        buttons.append(show_product_link.get_content())
 
         has_variants = len(product.get("prices")) > 1
         if has_variants:
@@ -60,6 +62,7 @@ def create_product_elements(current_page_list, **kwargs):
                 title="🌈 Voir les variantes")
             list_variants_button.set_payload(
                 Payload(target_action="list_product_variants", product_id=p["id"]).get_content())
+            buttons.append(list_variants_button.get_content())
 
         else:
             # ? Add product to cart
@@ -71,15 +74,13 @@ def create_product_elements(current_page_list, **kwargs):
                     target_action="add_to_cart",
                     product_id=p["id"],
                     variant_id=None).get_content())
+            buttons.append(add_to_cart_button.get_content())
 
         element = msgr_api_components.Element(
             title=title,
             subtitle=subtitle,
             image_url=p["image"],
-            buttons=[
-                show_product_link.get_content(),
-                add_to_cart_button.get_content()
-            ]
+            buttons=buttons
         )
         elements.add_element(element.get_content())
 
