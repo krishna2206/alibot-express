@@ -173,7 +173,7 @@ def create_cart_product_elements(current_page_list, **kwargs):
     for cart_product in current_page_list:
         product = aliexpress.get_product(cart_product.get("product_id"))
 
-        title = product.get("title")
+        title = product.get("title")[:20]
         variant_id = cart_product.get("variant_id")
         if variant_id is not None:
             variant = _get_product_variant(variant_id, product.get("prices"))
