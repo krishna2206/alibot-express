@@ -262,7 +262,7 @@ def list_cart_products(page: int, recipient_id: str):
             title="Vider le panier",
             image_url="https://cdn-icons-png.flaticon.com/512/2038/2038854.png",
             payload=Payload(
-                target_action="clear_cart_button").get_content())
+                target_action="clear_cart").get_content())
         quickreplies.add_quick_reply(clear_cart_button.get_content())
 
         #* Fin de la page
