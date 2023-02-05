@@ -203,9 +203,9 @@ def _check_cart_product(product_id: str, cart: list) -> bool:
     return False
 
 
-def _get_product_variant(variant_id: int, variants: list):
+def _get_product_variant(variant_id: str, variants: list):
     for variant in variants:
-        if variant.get("variantId") == variant_id:
+        if str(variant.get("variantId")) == variant_id:
             return variant
     return None
 
