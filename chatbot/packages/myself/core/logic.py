@@ -185,8 +185,7 @@ def create_cart_product_elements(current_page_list, **kwargs):
                 f"{display_currency} {variant.get('promotionalPrice')}",
                 _to_strikethrough(f"{display_currency} {variant.get('initialPrice')}"),
                 bold('-' + str(variant.get('discount')) + '% de réduction')) +
-            f"{variant.get('availQuantity')} dispo" +
-            f"{cart_product.get('quantity')} dans le panier"
+            f"{variant.get('availQuantity')} dispo - {cart_product.get('quantity')} dans le panier"
         )
         if variant_id is not None:
             subtitle += f"\nVariante : {variant.get('variantName')}"
