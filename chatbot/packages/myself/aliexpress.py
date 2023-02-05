@@ -377,7 +377,7 @@ def show_estimated_price(recipient_id: str):
         estimated_price_msg += f" 💰 Prix total : {variant['initialPrice'] * cart_product['quantity']} {display_currency}\n"
         estimated_price_msg += f" 💰 Prix total avec réduction : {variant['promotionalPrice'] * cart_product['quantity']} {display_currency}\n"
         estimated_price_msg += f" 🚛 Frais de livraison : {product['shippingFee']} {display_currency}\n"
-        estimated_price_msg += f" 🚚 Durée estimée de livraison : {variant['deliveryDetails']['deliveryDayMin']} - {variant['deliveryDetails']['deliveryDayMax']} jours\n\n"
+        estimated_price_msg += f" 🚚 Durée estimée de livraison : {product['deliveryDetails']['deliveryDayMin']} - {product['deliveryDetails']['deliveryDayMax']} jours\n\n"
 
     estimated_price_msg += (
         bold(f"🛒 Prix total du panier :\n") +
