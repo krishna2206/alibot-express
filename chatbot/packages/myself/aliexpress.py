@@ -16,7 +16,7 @@ CURRENCY_MAP = {
 }
 
 
-def ask_product_keyword(recipient_id):
+def ask_product_keyword(recipient_id: str):
     user_model.add_query(
         recipient_id,
         "send_search_result",
@@ -26,7 +26,7 @@ def ask_product_keyword(recipient_id):
     send_api.send_text_message("💬 Quel produit voulez-vous rechercher ?", recipient_id)
 
 
-def send_search_result(keywords, page, subpage, recipient_id):
+def send_search_result(keywords: str, page: int, subpage: int, recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     aliexpress = AliExpress(
         REGION, customer.get("currency"), LOCALE, SITE)
@@ -46,7 +46,7 @@ def send_search_result(keywords, page, subpage, recipient_id):
         else:
             current_page_list = search_results
 
-        elements = logic.create_product_elements(current_page_list)
+        elements = logic.create_product_elements(current_page_list, customer_id=recipient_id)
         quickreplies = msgr_api_components.QuickReplies()
 
         # ? Reiterate action button
@@ -111,58 +111,185 @@ def send_search_result(keywords, page, subpage, recipient_id):
         return True
 
 
-def add_to_cart(product_id, recipient_id):
+def list_product_variants(product_id: str, page: int, recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
-    try:
-        customer_model.update_customer(
-            customer_id=recipient_id,
-            field="cart",
-            new_value=customer.get("cart").extend({"product_id": product_id})
-        )
-    except Exception as e:
-        send_api.send_text_message(
-            f"❎ Une erreur est survenue lors de l'ajout au panier. {e}",
-            recipient_id)
+    aliexpress = AliExpress(
+        REGION, customer.get("currency"), LOCALE, SITE)
+    product = aliexpress.get_product(product_id)
+    product_variants = product["prices"]
+
+    splitted_product_variants = list(chop(10, product_variants))
+    if len(product_variants) > 10:
+        current_page_list = splitted_product_variants[page - 1]
     else:
-        send_api.send_text_message("Le produit a été ajouté au panier 🛒✅")
+        current_page_list = product_variants
+
+    elements = logic.create_product_variant_elements(
+        current_page_list, customer_id=recipient_id, product_id=product_id)
+    quickreplies = msgr_api_components.QuickReplies()
+
+    # ? Reiterate action button
+    reiterate_button = msgr_api_components.QuickReply(
+        title="Autre recherche",
+        image_url="https://freeiconshop.com/wp-content/uploads/edd/refresh-flat.png",
+        payload=Payload(
+            target_action="ask_product_keyword").get_content())
+    quickreplies.add_quick_reply(reiterate_button.get_content())
+
+    #* Fin de la page
+    if current_page_list == splitted_product_variants[-1]:
+        send_api.send_text_message(f"🌈 Voici les variantes de ce produit :", recipient_id)
+        print(send_api.send_generic_message(
+            elements.get_content(),
+            recipient_id,
+            quick_replies=quickreplies.get_content(),
+            image_aspect_ratio="square"))
+
+    else:
+        next_page = page + 1
+        next_button = msgr_api_components.QuickReply(
+            title="Suivant",
+            image_url="https://icon-library.com/images/next-icon/next-icon-11.jpg",
+            payload=Payload(
+                target_action="list_product_variants",
+                page=next_page).get_content())
+        quickreplies.add_quick_reply(next_button.get_content())
+
+        if page == 1:
+            send_api.send_text_message(f"🌈 Voici les variantes de ce produit :", recipient_id)
+        send_api.send_text_message(f"Page {page} :", recipient_id)
+        print(send_api.send_generic_message(
+            elements.get_content(),
+            recipient_id,
+            quick_replies=quickreplies.get_content(),
+            image_aspect_ratio="square"))
+
+    return True
+    
+
+def add_to_cart(product_id: str, variant_id: str, recipient_id: str):
+    customer = customer_model.get_customer(recipient_id)
+    cart = customer.get("cart")
+    product_already_exists = logic._check_cart_product(product_id, cart)
+
+    if product_already_exists:
+        send_api.send_text_message("Ce produit existe déjà dans le panier.", recipient_id)
+
+    else:
+        try:
+            customer_model.update_customer(
+                customer_id=recipient_id,
+                field="cart",
+                new_value=customer.get("cart").extend({"product_id": product_id, "variant_id": variant_id})
+            )
+        except Exception as e:
+            send_api.send_text_message(
+                f"❎ Une erreur est survenue lors de l'ajout au panier. {e}",
+                recipient_id)
+        else:
+            send_api.send_text_message("Le produit a été ajouté au panier 🛒✅")
 
 
-def remove_to_cart(product_id, recipient_id):
+def remove_to_cart(product_id: str, recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     cart: list = customer["cart"]
 
     if len(cart) == 0:
-        send_api.send_text_message("Ce produit n'est plus dans votre panier 🛒⛔")
+        send_api.send_text_message("Votre panier est déjà vide 🛒⛔")
 
     else:
-        for idx, product in enumerate(cart.copy()):
-            if product["product_id"] == product_id:
-                cart.pop(idx)
-                try:
-                    customer_model.update_customer(
-                        customer_id=recipient_id,
-                        field="cart",
-                        new_value=cart
-                    )
-                except Exception as e:
-                    send_api.send_text_message(
-                        f"❎ Une erreur est survenue lors de l'action effectué. {e}",
-                        recipient_id)
-                    return False
-                else:
-                    send_api.send_text_message("Le produit a été retiré du panier 🛒✅")
-                    return True
+        product_still_exists = logic._check_cart_product(product_id, cart)
+
+        if product_still_exists:
+            for idx, product in enumerate(cart.copy()):
+                if product["product_id"] == product_id:
+                    cart.pop(idx)
+                    try:
+                        customer_model.update_customer(
+                            customer_id=recipient_id,
+                            field="cart",
+                            new_value=cart
+                        )
+                    except Exception as e:
+                        send_api.send_text_message(
+                            f"❎ Une erreur est survenue lors de l'action effectué. {e}",
+                            recipient_id)
+                    else:
+                        send_api.send_text_message("Le produit a été retiré du panier 🛒✅")
+        
+        else:
+            send_api.send_text_message(
+                "⚠️ Il semblerait que ce produit a déjà été retiré du panier.",
+                recipient_id)
+
+
+def list_cart_products(page: int, recipient_id: str):
+    customer = customer_model.get_customer(recipient_id)
+    cart = customer["cart"]
+
+    if len(cart) == 0:
         send_api.send_text_message(
-            "⚠️ Il semblerait que ce produit a déjà été retiré du panier.",
+            "Vous n'avez pas encore de produits dans votre panier.",
             recipient_id)
-        return False
+
+    else:
+        splitted_cart = list(chop(10, cart))
+        if len(cart) > 10:
+            current_page_list = splitted_cart[page - 1]
+        else:
+            current_page_list = cart
+
+        elements = logic.create_cart_product_elements(current_page_list, customer_id=recipient_id)
+        quickreplies = msgr_api_components.QuickReplies()
+
+        # ? Ask estimate button
+        show_estimated_price_button = msgr_api_components.QuickReply(
+            title="Demander devis",
+            image_url="https://cdn-icons-png.flaticon.com/512/712/712613.png",
+            payload=Payload(
+                target_action="show_estimated_price").get_content())
+        quickreplies.add_quick_reply(show_estimated_price_button.get_content())
+
+        # ? Clear cart button
+        clear_cart_button = msgr_api_components.QuickReply(
+            title="Vider le panier",
+            image_url="https://cdn-icons-png.flaticon.com/512/2038/2038854.png",
+            payload=Payload(
+                target_action="clear_cart_button").get_content())
+        quickreplies.add_quick_reply(clear_cart_button.get_content())
+
+        #* Fin de la page
+        if current_page_list == splitted_cart[-1]:
+            send_api.send_text_message(f"🛒 Voici les produits dans votre panier :", recipient_id)
+            print(send_api.send_generic_message(
+                elements.get_content(),
+                recipient_id,
+                quick_replies=quickreplies.get_content(),
+                image_aspect_ratio="square"))
+
+        else:
+            next_page = page + 1
+            next_button = msgr_api_components.QuickReply(
+                title="Suivant",
+                image_url="https://icon-library.com/images/next-icon/next-icon-11.jpg",
+                payload=Payload(
+                    target_action="list_cart_products",
+                    page=next_page).get_content())
+            quickreplies.add_quick_reply(next_button.get_content())
+
+            if page == 1:
+                send_api.send_text_message(f"🛒 Voici les produits dans votre panier :", recipient_id)
+            send_api.send_text_message(f"Page {page} :", recipient_id)
+            print(send_api.send_generic_message(
+                elements.get_content(),
+                recipient_id,
+                quick_replies=quickreplies.get_content(),
+                image_aspect_ratio="square"))
+
+        return True
 
 
-def list_cart_products(recipient_id):
-    pass
-
-
-def clear_cart(recipient_id):
+def clear_cart(recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     cart = customer["cart"]
 
@@ -185,19 +312,19 @@ def clear_cart(recipient_id):
 
 
 # TODO : Devis
-def show_estimated_price(recipient_id):
+def show_estimated_price(recipient_id: str):
     pass
 
 
-def get_currency(recipient_id):
+def get_currency(recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     
     send_api.send_text_message(
-        f"La devise que vous utilisez actuellement est {CURRENCY_MAP.get(customer.get('currency'))}",
+        f"🪙 La devise que vous utilisez actuellement est {CURRENCY_MAP.get(customer.get('currency'))}",
         recipient_id)
 
 
-def ask_new_currency(recipient_id):
+def ask_new_currency(recipient_id: str):
     quickreplies = msgr_api_components.QuickReplies()
 
     eur_currency_quickrep = msgr_api_components.QuickReply(
@@ -218,7 +345,7 @@ def ask_new_currency(recipient_id):
         recipient_id)
 
 
-def update_currency(currency, recipient_id):
+def update_currency(currency: str, recipient_id: str):
     try:
         customer_model.update_customer(
             customer_id=recipient_id,
@@ -231,9 +358,10 @@ def update_currency(currency, recipient_id):
             recipient_id)
     else:
         send_api.send_text_message(
-            f"Vous utilisez maintenant {CURRENCY_MAP.get(currency)} comme devise.",
+            f"✅ Vous utilisez maintenant {CURRENCY_MAP.get(currency)} comme devise.",
             recipient_id)
 
 
-def show_exchange_rate(recipient_id):
+# TODO : Taux de change
+def show_exchange_rate(recipient_id: str):
     pass

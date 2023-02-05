@@ -1,6 +1,6 @@
 from chatbot.packages.myself.aliexpress import (
     add_to_cart, ask_new_currency, ask_product_keyword, clear_cart,
-    get_currency, list_cart_products, remove_to_cart, send_search_result,
+    get_currency, list_cart_products, list_product_variants, remove_to_cart, send_search_result,
     show_estimated_price, show_exchange_rate, update_currency)
 from chatbot.packages.myself.myself import help_message, welcome_message
 
@@ -22,6 +22,10 @@ INTENTS = [
     {
         "name": "send_search_result",
         "action": send_search_result
+    },
+    {
+        "name": "list_product_variants",
+        "action": list_product_variants
     },
     {
         "name": "add_to_cart",
@@ -59,4 +63,5 @@ INTENTS = [
         "name": "show_exchange_rate",
         "action": show_exchange_rate
     }
+    
 ]

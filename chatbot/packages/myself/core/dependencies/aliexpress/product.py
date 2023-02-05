@@ -73,7 +73,9 @@ def __parse_js_data(js_data: dict):
         Utils.get_value(["skuModule", "skuPriceList"], js_data)
     ):
         cleaned_data["prices"].append({
-            "variantName": Utils.get_value(["skuPropertyImagePath"], variant_visual),
+            "variantId": Utils.get_value(["skuId"], variant_price),
+            "variantName": Utils.get_value(["propertyValueDisplayName"], variant_visual),
+            "variantImage": Utils.get_value(["skuPropertyImagePath"], variant_visual),
             "salable": Utils.get_value(["salable"], variant_price),
             "availQuantity": Utils.get_value(["skuVal", "availQuantity"], variant_price),
             "discount": int(Utils.get_value(["skuVal", "discount"], variant_price)),
