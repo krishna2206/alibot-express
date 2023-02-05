@@ -183,7 +183,7 @@ def add_to_cart(product_id: str, variant_id: str, recipient_id: str):
 
     else:
         try:
-            cart.extend({"product_id": product_id, "variant_id": variant_id})
+            cart.append({"product_id": product_id, "variant_id": variant_id})
             customer_model.update_customer(
                 customer_id=recipient_id,
                 field="cart",
