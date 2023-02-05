@@ -302,7 +302,7 @@ def clear_cart(recipient_id: str):
     cart = customer["cart"]
 
     if len(cart) == 0:
-        send_api.send_text_message("Votre panier est déjà vide.")
+        send_api.send_text_message("Votre panier est déjà vide.", recipient_id)
     
     else:
         try:
@@ -316,7 +316,7 @@ def clear_cart(recipient_id: str):
                 f"❎ Une erreur est survenue lors de l'action effectué. {e}",
                 recipient_id)
         else:
-            send_api.send_text_message("Votre panier a été vidé avec succès 🛒✅")
+            send_api.send_text_message("Votre panier a été vidé avec succès 🛒✅", recipient_id)
 
 
 # TODO : Devis
