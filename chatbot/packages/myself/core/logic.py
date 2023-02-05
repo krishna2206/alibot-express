@@ -21,7 +21,7 @@ def create_product_elements(current_page_list, **kwargs):
     for p in current_page_list:
         product = aliexpress.get_product(p.get("id"))
 
-        title = f"{p.get('title')[:70]}..."
+        title = f"{p.get('title')[:65]}..." if len(p.get('title')) > 65 else p.get('title')
         subtitle = f"{p['prices']['salePrice']['formattedPrice']}\n"
         if (p["trade"] is not None) or (p["rating"] is not None):
             subtitle += (
@@ -111,7 +111,10 @@ def create_product_variant_elements(current_page_list, **kwargs):
     elements = msgr_api_components.Elements()
 
     for variant in current_page_list:
-        title = f"{variant.get('variantName')[:70]}..."
+        title = (
+            f"{variant.get('variantName')[:65]}..."
+            if len(variant.get('variantName')) > 65
+            else variant.get('variantName'))
         subtitle = (
             "{}   {}   {}\n".format(
                 f"{display_currency} {variant.get('promotionalPrice')}",
@@ -173,7 +176,7 @@ def create_cart_product_elements(current_page_list, **kwargs):
     for cart_product in current_page_list:
         product = aliexpress.get_product(cart_product.get("product_id"))
 
-        title = f"{product.get('title')[:70]}..."
+        title = f"{product.get('title')[:65]}..." if len(product.get('title')) > 65 else product.get('title')
         variant_id = cart_product.get("variant_id")
         if variant_id is not None:
             variant = _get_product_variant(variant_id, product.get("prices"))
