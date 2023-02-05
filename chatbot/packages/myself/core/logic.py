@@ -61,7 +61,10 @@ def create_product_elements(current_page_list, **kwargs):
                 button_type="postback",
                 title="🌈 Voir les variantes")
             list_variants_button.set_payload(
-                Payload(target_action="list_product_variants", product_id=p["id"]).get_content())
+                Payload(
+                    target_action="list_product_variants",
+                    product_id=p["id"],
+                    page=1).get_content())
             buttons.append(list_variants_button.get_content())
 
         else:
