@@ -183,7 +183,7 @@ def ask_quantity_to_add(product_id: str, variant_id: str, max_quantity: int, rec
     send_api.send_text_message("💬 Combien d'unité voulez-vous ajouter au panier ?", recipient_id)
 
 
-def add_to_cart(product_id: str, variant_id: str, quantity: int, max_quantity: int, recipient_id: str):
+def add_to_cart(quantity: int, product_id: str, variant_id: str, max_quantity: int, recipient_id: str):
     try:
         quantity = int(quantity)
     except ValueError:

@@ -81,9 +81,9 @@ def create_product_elements(current_page_list, **kwargs):
                 target_action = "add_to_cart"
                 payload = Payload(
                     target_action=target_action,
+                    quantity=1,
                     product_id=p["id"],
                     variant_id=None,
-                    quantity=1,
                     max_quantity=product["prices"][0]["availQuantity"])
             add_to_cart_button = msgr_api_components.Button(
                 button_type="postback",
@@ -139,9 +139,9 @@ def create_product_variant_elements(current_page_list, **kwargs):
             target_action = "add_to_cart"
             payload = Payload(
                 target_action=target_action,
+                quantity=1,
                 product_id=product_id,
                 variant_id=str(variant.get("variantId")),
-                quantity=1,
                 max_quantity=variant.get('availQuantity'))
 
         add_to_cart_button = msgr_api_components.Button(
