@@ -8,8 +8,8 @@ from chatbot.model import Model
 	"customer_id" : str
 	"currency": "EUR",
     "cart": [
-        {"product_id": str},
-        {"product_id": str},
+        {"product_id": str, "variant_id": str, "quantity": int},
+        {"product_id": str, "variant_id": str, "quantity": int},
         ....
     ]
 }

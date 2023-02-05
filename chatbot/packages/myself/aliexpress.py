@@ -170,30 +170,58 @@ def list_product_variants(product_id: str, page: int, recipient_id: str):
             image_aspect_ratio="square"))
 
     return True
-    
 
-def add_to_cart(product_id: str, variant_id: str, recipient_id: str):
-    customer = customer_model.get_customer(recipient_id)
-    cart: list = customer.get("cart")
-    product_already_exists = logic._check_cart_product(product_id, cart)
 
-    if product_already_exists:
-        send_api.send_text_message("Ce produit existe déjà dans le panier.", recipient_id)
+def ask_quantity_to_add(product_id: str, variant_id: str, max_quantity: int, recipient_id: str):
+    user_model.add_query(
+        recipient_id,
+        "add_to_cart",
+        product_id=product_id,
+        variant_id=variant_id,
+        max_quantity=max_quantity)
 
+    send_api.send_text_message("💬 Combien d'unité voulez-vous ajouter au panier ?", recipient_id)
+
+
+def add_to_cart(product_id: str, variant_id: str, quantity: int, max_quantity: int, recipient_id: str):
+    try:
+        quantity = int(quantity)
+    except ValueError:
+        send_api.send_text_message("⛔ Le nombre que vous avez entré est incorrect.", recipient_id)
+        ask_quantity_to_add(product_id, variant_id, max_quantity, recipient_id)
     else:
-        try:
-            cart.append({"product_id": product_id, "variant_id": variant_id})
-            customer_model.update_customer(
-                customer_id=recipient_id,
-                field="cart",
-                new_value=cart
-            )
-        except Exception as e:
+        if quantity <= 0:
             send_api.send_text_message(
-                f"❎ Une erreur est survenue lors de l'ajout au panier. {e}",
-                recipient_id)
+                "⛔ Le nombre que vous avez entré ne doit pas être négatif ou nul.", recipient_id)
+            ask_quantity_to_add(product_id, variant_id, max_quantity, recipient_id)
+
+        elif quantity > max_quantity:
+            send_api.send_text_message(
+                "⛔ Le nombre que vous avez entré ne doit pas dépasser la quantité disponible.", recipient_id)
+            ask_quantity_to_add(product_id, variant_id, max_quantity, recipient_id)
+
         else:
-            send_api.send_text_message("Le produit a été ajouté au panier 🛒✅", recipient_id)
+            customer = customer_model.get_customer(recipient_id)
+            cart: list = customer.get("cart")
+            product_already_exists = logic._check_cart_product(product_id, cart)
+
+            if product_already_exists:
+                send_api.send_text_message("Ce produit existe déjà dans le panier.", recipient_id)
+
+            else:
+                try:
+                    cart.append({"product_id": product_id, "variant_id": variant_id, "quantity": quantity})
+                    customer_model.update_customer(
+                        customer_id=recipient_id,
+                        field="cart",
+                        new_value=cart
+                    )
+                except Exception as e:
+                    send_api.send_text_message(
+                        f"❎ Une erreur est survenue lors de l'ajout au panier. {e}",
+                        recipient_id)
+                else:
+                    send_api.send_text_message("Le produit a été ajouté au panier 🛒✅", recipient_id)
 
 
 def remove_to_cart(product_id: str, recipient_id: str):
@@ -296,7 +324,6 @@ def list_cart_products(page: int, recipient_id: str):
         return True
 
 
-# TODO : To test
 def clear_cart(recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     cart = customer["cart"]
@@ -321,7 +348,19 @@ def clear_cart(recipient_id: str):
 
 # TODO : Devis
 def show_estimated_price(recipient_id: str):
-    pass
+    customer = customer_model.get_customer(recipient_id)
+    cart = customer["cart"]
+    display_currency = "€" if customer.get("currency") == "EUR" else "$"
+    aliexpress = AliExpress(
+        REGION, customer.get("currency"), LOCALE, SITE)
+
+    """
+    Estimated price
+    {
+        "product_name": str,
+        "product_price": float,
+    }
+    """
 
 
 def get_currency(recipient_id: str):
