@@ -172,6 +172,7 @@ def list_product_variants(product_id: str, page: int, recipient_id: str):
     return True
     
 
+# TODO : To test
 def add_to_cart(product_id: str, variant_id: str, recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     cart = customer.get("cart")
@@ -192,9 +193,10 @@ def add_to_cart(product_id: str, variant_id: str, recipient_id: str):
                 f"❎ Une erreur est survenue lors de l'ajout au panier. {e}",
                 recipient_id)
         else:
-            send_api.send_text_message("Le produit a été ajouté au panier 🛒✅")
+            send_api.send_text_message("Le produit a été ajouté au panier 🛒✅", recipient_id)
 
 
+# TODO : To test
 def remove_to_cart(product_id: str, recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     cart: list = customer["cart"]
@@ -220,7 +222,7 @@ def remove_to_cart(product_id: str, recipient_id: str):
                             f"❎ Une erreur est survenue lors de l'action effectué. {e}",
                             recipient_id)
                     else:
-                        send_api.send_text_message("Le produit a été retiré du panier 🛒✅")
+                        send_api.send_text_message("Le produit a été retiré du panier 🛒✅", recipient_id)
         
         else:
             send_api.send_text_message(
@@ -228,6 +230,7 @@ def remove_to_cart(product_id: str, recipient_id: str):
                 recipient_id)
 
 
+# TODO : To test
 def list_cart_products(page: int, recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     cart = customer["cart"]
@@ -294,6 +297,7 @@ def list_cart_products(page: int, recipient_id: str):
         return True
 
 
+# TODO : To test
 def clear_cart(recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     cart = customer["cart"]
