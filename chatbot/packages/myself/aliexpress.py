@@ -175,7 +175,7 @@ def list_product_variants(product_id: str, page: int, recipient_id: str):
 # TODO : To test
 def add_to_cart(product_id: str, variant_id: str, recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
-    cart = customer.get("cart")
+    cart: list = customer.get("cart")
     product_already_exists = logic._check_cart_product(product_id, cart)
 
     if product_already_exists:
@@ -183,10 +183,11 @@ def add_to_cart(product_id: str, variant_id: str, recipient_id: str):
 
     else:
         try:
+            cart.extend({"product_id": product_id, "variant_id": variant_id})
             customer_model.update_customer(
                 customer_id=recipient_id,
                 field="cart",
-                new_value=customer.get("cart").extend({"product_id": product_id, "variant_id": variant_id})
+                new_value=cart
             )
         except Exception as e:
             send_api.send_text_message(
