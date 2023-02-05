@@ -191,7 +191,7 @@ def create_cart_product_elements(current_page_list, **kwargs):
             f"{variant.get('availQuantity')} dispo - {cart_product.get('quantity')} dans le panier"
         )
         if variant_id is not None:
-            subtitle += f"\nVariante : {variant.get('variantName')}"
+            subtitle += f"\n{variant.get('variantName')}"
 
         # ? Show product on browser
         show_product_link = msgr_api_components.Button(
