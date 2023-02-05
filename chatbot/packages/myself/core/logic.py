@@ -156,12 +156,14 @@ def create_cart_product_elements(current_page_list, **kwargs):
             variant = product.get("prices")[0]
 
         subtitle = (
-            "{} {} {}\n".format(
+            "{}   {}   {}\n".format(
                 f"{display_currency} {variant.get('promotionalPrice')}",
                 _to_strikethrough(f"{display_currency} {variant.get('initialPrice')}"),
-                bold(str(variant.get('discount')))) +
-            f"Dispo : {variant.get('availQuantity')}"
+                bold('-' + str(variant.get('discount')) + '% de réduction')) +
+            f"{variant.get('availQuantity')} dispo"
         )
+        if variant_id is not None:
+            subtitle += f"\nVariante : {variant.get('variantName')}"
 
         # ? Show product on browser
         show_product_link = msgr_api_components.Button(
