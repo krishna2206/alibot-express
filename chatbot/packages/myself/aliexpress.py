@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytz
 from split import chop
-from fancify_text import bold
+from fancify_text import bold, italic
 
 import config
 from chatbot.utils import Payload
@@ -280,7 +280,7 @@ def list_cart_products(page: int, recipient_id: str):
         # ? Ask estimate button
         show_estimated_price_button = msgr_api_components.QuickReply(
             title="Demander devis",
-            image_url="https://cdn-icons-png.flaticon.com/512/712/712613.png",
+            image_url="https://cdn3.iconfinder.com/data/icons/flat-design-hands-icons/128/42-512.png",
             payload=Payload(
                 target_action="show_estimated_price").get_content())
         quickreplies.add_quick_reply(show_estimated_price_button.get_content())
@@ -368,16 +368,18 @@ def show_estimated_price(recipient_id: str):
         curr_total_price = variant["promotionalPrice"] * cart_product["quantity"] + product["shippingFee"]
         total_price += curr_total_price
         
-        estimated_price_msg += f"• {product['title']} ({variant['variantName']}) :\n"
+        estimated_price_msg += italic(f"• {product['title']} ({variant['variantName']}) :\n")
         estimated_price_msg += f" 💰 Prix unitaire : {variant['promotionalPrice']} {display_currency}\n"
         estimated_price_msg += f" 🛍 Quantité : {cart_product['quantity']}\n"
         estimated_price_msg += f" 💰 Prix total : {round(variant['promotionalPrice'] * cart_product['quantity'], 1)} {display_currency}\n"
         estimated_price_msg += f" 🚛 Frais de livraison : {product['shippingFee']} {display_currency}\n"
         estimated_price_msg += f" 🚚 Durée estimée de livraison : {product['deliveryDetails']['deliveryDayMin']} - {product['deliveryDetails']['deliveryDayMax']} jours\n\n"
 
+    total_price = round(total_price, 1)
+    total_price_ariary = round(total_price * exchange_rate.get(customer.get('currency')), 1)
     estimated_price_msg += (
         bold(f"🛒 Prix total du panier :\n") +
-        f"{round(total_price, 1)} {display_currency} soit {round(total_price * exchange_rate.get(customer.get('currency')), 1)} Ariary\n")
+        f"{total_price} {display_currency} soit {total_price_ariary} Ariary\n")
 
     send_api.send_text_message(estimated_price_msg, recipient_id)
 
