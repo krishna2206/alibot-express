@@ -280,7 +280,7 @@ def list_cart_products(page: int, recipient_id: str):
         # ? Ask estimate button
         show_estimated_price_button = msgr_api_components.QuickReply(
             title="Demander devis",
-            image_url="https://cdn3.iconfinder.com/data/icons/flat-design-hands-icons/128/42-512.png",
+            image_url="https://cdn-icons-png.flaticon.com/512/1213/1213930.png",
             payload=Payload(
                 target_action="show_estimated_price").get_content())
         quickreplies.add_quick_reply(show_estimated_price_button.get_content())
