@@ -78,7 +78,10 @@ def __parse_js_data(js_data: dict):
             "variantImage": Utils.get_value(["skuPropertyImagePath"], variant_visual),
             "salable": Utils.get_value(["salable"], variant_price),
             "availQuantity": Utils.get_value(["skuVal", "availQuantity"], variant_price),
-            "discount": int(Utils.get_value(["skuVal", "discount"], variant_price)),
+            "discount": (
+                Utils.get_value(["skuVal", "discount"], variant_price)
+                if Utils.get_value(["skuVal", "discount"], variant_price) is None
+                else int(Utils.get_value(["skuVal", "discount"], variant_price))),
             "promotionalPrice": Utils.get_value(["skuVal", "skuActivityAmount", "value"], variant_price),
             "initialPrice": Utils.get_value(["skuVal", "skuAmount", "value"], variant_price),
         })
