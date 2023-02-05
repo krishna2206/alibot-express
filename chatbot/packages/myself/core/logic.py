@@ -70,26 +70,29 @@ def create_product_elements(current_page_list, **kwargs):
         else:
             # ? Add product to cart
             # ? Choose the number to add if the available quantity is over 1
-            if product["prices"][0]["availQuantity"] > 1:
-                target_action = "ask_quantity_to_add"
-                payload = Payload(
-                    target_action=target_action,
-                    product_id=p["id"],
-                    variant_id=None,
-                    max_quantity=product["prices"][0]["availQuantity"])
+            if product["prices"][0]["availQuantity"] > 0:
+                if product["prices"][0]["availQuantity"] > 1:
+                    target_action = "ask_quantity_to_add"
+                    payload = Payload(
+                        target_action=target_action,
+                        product_id=p["id"],
+                        variant_id=None,
+                        max_quantity=product["prices"][0]["availQuantity"])
+                elif product["prices"][0]["availQuantity"] == 1:
+                    target_action = "add_to_cart"
+                    payload = Payload(
+                        target_action=target_action,
+                        quantity=1,
+                        product_id=p["id"],
+                        variant_id=None,
+                        max_quantity=product["prices"][0]["availQuantity"])
+                add_to_cart_button = msgr_api_components.Button(
+                    button_type="postback",
+                    title="🛒 Ajouter au panier")
+                add_to_cart_button.set_payload(payload.get_content())
+                buttons.append(add_to_cart_button.get_content())
             else:
-                target_action = "add_to_cart"
-                payload = Payload(
-                    target_action=target_action,
-                    quantity=1,
-                    product_id=p["id"],
-                    variant_id=None,
-                    max_quantity=product["prices"][0]["availQuantity"])
-            add_to_cart_button = msgr_api_components.Button(
-                button_type="postback",
-                title="🛒 Ajouter au panier")
-            add_to_cart_button.set_payload(payload.get_content())
-            buttons.append(add_to_cart_button.get_content())
+                subtitle += "\nPlus de stock"
 
         element = msgr_api_components.Element(
             title=title,
