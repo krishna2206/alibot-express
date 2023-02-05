@@ -27,7 +27,7 @@ def create_product_elements(current_page_list, **kwargs):
             subtitle += (
                 "{}{}\n".format(
                     '' if p['trade'] is None else p['trade']['tradeDesc'],
-                    '' if p['rating'] is None else f"- {p['rating']}/5"
+                    '' if p['rating'] is None else f" - {p['rating']}/5"
                 )
             )
 
@@ -101,11 +101,11 @@ def create_product_variant_elements(current_page_list, **kwargs):
     for variant in current_page_list:
         title = variant.get("variantName")
         subtitle = (
-            "{} {} {}\n".format(
+            "{}   {} {}\n".format(
                 f"{display_currency} {variant.get('promotionalPrice')}",
                 _to_strikethrough(f"{display_currency} {variant.get('initialPrice')}"),
-                bold(str(variant.get('discount')))) +
-            f"Dispo : {variant.get('availQuantity')}"
+                bold('-' + str(variant.get('discount')) + '%')) +
+            f"{variant.get('availQuantity')} dispo"
         )
 
         # ? Show product on browser

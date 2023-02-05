@@ -152,6 +152,7 @@ def list_product_variants(product_id: str, page: int, recipient_id: str):
             image_url="https://icon-library.com/images/next-icon/next-icon-11.jpg",
             payload=Payload(
                 target_action="list_product_variants",
+                product_id=product_id,
                 page=next_page).get_content())
         quickreplies.add_quick_reply(next_button.get_content())
 
