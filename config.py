@@ -42,6 +42,7 @@ WEB_CONCURRENCY = __verify_variable("WEB_CONCURRENCY", os.getenv("WEB_CONCURRENC
 
 """Optional variables"""
 APP_STATE = os.getenv("APP_STATE")
+ADMIN_USER_ID = __verify_variable("ADMIN_USER_ID", os.getenv("ADMIN_USER_ID"))
 
 
 """Paths"""
