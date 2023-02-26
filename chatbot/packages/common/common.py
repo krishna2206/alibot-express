@@ -45,7 +45,7 @@ def safe_execute_action(action):
         try:
             action(*args, **kwargs)
         except Exception as error:
-            if recipient_id == config.ADMIN_USER_ID:
+            if recipient_id in (config.ADMIN_USER_ID, "8777470678991816"): # ? Tsiory Anhy Krishna
                 send_api.send_text_message(
                     "⚠️ Une erreur est survenue !"
                     f"Exception: {type(error).__name__} - {error}",
