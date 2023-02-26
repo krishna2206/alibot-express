@@ -4,7 +4,6 @@ import pytz
 from split import chop
 from fancify_text import bold, italic
 
-import config
 from chatbot.utils import Payload
 from chatbot.sharedinstances import send_api, msgr_api_components, user_model
 
@@ -13,6 +12,8 @@ from .core.config import LOCALE, REGION, SITE
 from .core.customermodel import CustomerModel
 from .core.dependencies import bmoi_er
 from .core.dependencies.aliexpress import AliExpress
+
+from chatbot.packages.common.common import safe_execute_action
 
 customer_model = CustomerModel()
 CURRENCY_MAP = {
@@ -31,6 +32,7 @@ def ask_product_keyword(recipient_id: str):
     send_api.send_text_message("💬 Quel produit voulez-vous rechercher ?", recipient_id)
 
 
+@safe_execute_action
 def send_search_result(keywords: str, page: int, subpage: int, recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     aliexpress = AliExpress(
@@ -116,6 +118,7 @@ def send_search_result(keywords: str, page: int, subpage: int, recipient_id: str
         return True
 
 
+@safe_execute_action
 def list_product_variants(product_id: str, page: int, recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     aliexpress = AliExpress(
@@ -184,6 +187,7 @@ def ask_quantity_to_add(product_id: str, variant_id: str, max_quantity: int, rec
     send_api.send_text_message("💬 Combien d'unité voulez-vous ajouter au panier ?", recipient_id)
 
 
+@safe_execute_action
 def add_to_cart(quantity: int, product_id: str, variant_id: str, max_quantity: int, recipient_id: str):
     try:
         quantity = int(quantity)
@@ -224,6 +228,7 @@ def add_to_cart(quantity: int, product_id: str, variant_id: str, max_quantity: i
                     send_api.send_text_message("Le produit a été ajouté au panier 🛒✅", recipient_id)
 
 
+@safe_execute_action
 def remove_to_cart(product_id: str, recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     cart: list = customer["cart"]
@@ -256,6 +261,7 @@ def remove_to_cart(product_id: str, recipient_id: str):
                 recipient_id)
 
 
+@safe_execute_action
 def list_cart_products(page: int, recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     cart = customer["cart"]
@@ -322,6 +328,7 @@ def list_cart_products(page: int, recipient_id: str):
         return True
 
 
+@safe_execute_action
 def clear_cart(recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     cart = customer["cart"]
@@ -343,6 +350,7 @@ def clear_cart(recipient_id: str):
             send_api.send_text_message("Votre panier a été vidé avec succès 🛒✅", recipient_id)
 
 
+@safe_execute_action
 def show_estimated_price(recipient_id: str):
     customer = customer_model.get_customer(recipient_id)
     cart = customer["cart"]
@@ -409,6 +417,7 @@ def ask_new_currency(recipient_id: str):
         recipient_id)
 
 
+@safe_execute_action
 def update_currency(currency: str, recipient_id: str):
     try:
         customer_model.update_customer(
@@ -425,6 +434,7 @@ def update_currency(currency: str, recipient_id: str):
             recipient_id)
 
 
+@safe_execute_action
 def show_exchange_rate(recipient_id: str):
     TIMEZONE_MG = pytz.timezone("Indian/Antananarivo")
     exchange_rate = bmoi_er.get_exchange_rate()
