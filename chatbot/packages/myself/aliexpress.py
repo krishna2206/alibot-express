@@ -14,7 +14,7 @@ from .core.customermodel import CustomerModel
 from .core.dependencies import bmoi_er
 from .core.dependencies.aliexpress import AliExpress
 
-customer_model = CustomerModel(config)
+customer_model = CustomerModel()
 CURRENCY_MAP = {
     "EUR": "l'Euro",
     "USD": "le Dollar USD"
@@ -214,8 +214,7 @@ def add_to_cart(quantity: int, product_id: str, variant_id: str, max_quantity: i
                     cart.append({"product_id": product_id, "variant_id": variant_id, "quantity": quantity})
                     customer_model.update_customer(
                         customer_id=recipient_id,
-                        field="cart",
-                        new_value=cart
+                        cart=cart
                     )
                 except Exception as e:
                     send_api.send_text_message(
@@ -242,8 +241,7 @@ def remove_to_cart(product_id: str, recipient_id: str):
                     try:
                         customer_model.update_customer(
                             customer_id=recipient_id,
-                            field="cart",
-                            new_value=cart
+                            cart=cart
                         )
                     except Exception as e:
                         send_api.send_text_message(
@@ -335,8 +333,7 @@ def clear_cart(recipient_id: str):
         try:
             customer_model.update_customer(
                 customer_id=recipient_id,
-                field="cart",
-                new_value=[]
+                cart=[]
             )
         except Exception as e:
             send_api.send_text_message(
@@ -416,8 +413,7 @@ def update_currency(currency: str, recipient_id: str):
     try:
         customer_model.update_customer(
             customer_id=recipient_id,
-            field="currency",
-            new_value=currency
+            currency=currency
         )
     except Exception as e:
         send_api.send_text_message(

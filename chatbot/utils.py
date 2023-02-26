@@ -52,17 +52,13 @@ def check_customer(action):
         customer_id = message.get_sender_id()
 
         DEFAULT_CURRENCY = "EUR"
-        customer_model = CustomerModel(config)
+        customer_model = CustomerModel()
         customer = customer_model.get_customer(customer_id)
 
         if customer is None:
             print(f"Adding customer {customer_id} in the database")
 
-            customer_model.add_customer({
-                "customer_id": customer_id,
-                "currency": DEFAULT_CURRENCY,
-                "cart": []
-            })
+            customer_model.add_customer(customer_id, DEFAULT_CURRENCY)
 
         return action(*args, **kwargs)
 

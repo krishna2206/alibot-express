@@ -1,6 +1,5 @@
 from fancify_text import bold
 
-import config
 from chatbot.utils import Payload
 from chatbot.sharedinstances import msgr_api_components
 
@@ -8,7 +7,7 @@ from chatbot.packages.myself.core.config import LOCALE, REGION, SITE
 from chatbot.packages.myself.core.customermodel import CustomerModel
 from chatbot.packages.myself.core.dependencies.aliexpress import AliExpress
 
-customer_model = CustomerModel(config)
+customer_model = CustomerModel()
 
 
 def create_product_elements(current_page_list, **kwargs):

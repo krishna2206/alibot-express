@@ -10,6 +10,7 @@ WELCOME_MESSAGES = (
     "Salutations! Grâce à notre chatbot, trouver des produits sur Aliexpress est plus facile que jamais avec des devis immédiats, sans les complications du taux de change."
 )
 
+
 def welcome_message(recipient_id):
     send_api.send_text_message(random.choice(WELCOME_MESSAGES), recipient_id)
     __ask_currency(recipient_id)

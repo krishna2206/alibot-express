@@ -1,95 +1,52 @@
-from pymongo import ASCENDING
-from pymongo.errors import DuplicateKeyError
-
-from chatbot.model import Model
-
-"""
-{
-	"customer_id" : str
-	"currency": "EUR",
-    "cart": [
-        {"product_id": str, "variant_id": str, "quantity": int},
-        {"product_id": str, "variant_id": str, "quantity": int},
-        ....
-    ]
-}
-"""
+from chatbot.model import BaseModel
 
 
-class CustomerModel(Model):
-    def __init__(self, config):
-        super().__init__(config)
+class CustomerModel(BaseModel):
+    """
+    This model will interact with the "customers" collection which have the following document model :
 
-    def add_customer(self, customer_info: dict):
-        if not isinstance(customer_info, dict):
-            raise InvalidCustomerInfoError("Provided customer info is invalid.")
+    {
+        "customer_id" : str
+        "currency": "EUR",
+        "cart": [
+            {"product_id": str, "variant_id": str, "quantity": int},
+            {"product_id": str, "variant_id": str, "quantity": int},
+            ....
+        ]
+    }
+    """
+    def __init__(self):
+        super().__init__(
+            collection="customers",
+            base_document={
+                "customer_id": "0000000000000000",
+                "currency": "EUR",
+                "cart": []
+            },
+            index="customer_id"
+        )
 
-        for value in tuple(customer_info.values()):
-            if value is None:
-                raise InvalidCustomerInfoError("One of the customer info is empty.")
+    def add_customer(self, customer_id: str, currency: str):
+        self.collection.insert_one({
+            "customer_id": customer_id,
+            "currency": currency,
+            "cart": []
+        })
 
-        if self.db_type == "MONGODB":
-            customers = self.db.customers
-            unique_identifier = "customer_id"
-
-            if "customers" not in self.db.list_collection_names():
-                try:
-                    customers.create_index([(unique_identifier, ASCENDING)], name=unique_identifier, unique=True)
-                except Exception as error:
-                    raise Exception(f"Failed to create index \"{unique_identifier}\". {type(error).__name__} {error}")
-            else:
-                try:
-                    customers.insert_one({
-                        unique_identifier: customer_info.get("customer_id"),
-                        "currency": customer_info.get("currency"),
-                        "cart": []
-                    })
-                except DuplicateKeyError:
-                    print(f"A customer with id {customer_info.get('customer_id')} already exists.")
-        else:
-            raise UnsupportedDBTypeError
-
-    def remove_customer(self, customer_id):
-        if self.db_type == "MONGODB":
-            customers = self.db.customers
-            customers.delete_one({
-                "customer_id": customer_id
-            })
-        else:
-            raise UnsupportedDBTypeError
-
-    def update_customer(self, customer_id, field, new_value):
-        if self.db_type == "MONGODB":
-            customers = self.db.customers
-
-            customer_query = {"customer_id": customer_id}
-            new_assignment = {"$set": {field: new_value}}
-
-            customers.update_one(customer_query, new_assignment)
-        else:
-            raise UnsupportedDBTypeError
-
-    def get_customer(self, customer_id):
-        if self.db_type == "MONGODB":
-            customers = self.db.customers
-
-            customer_query = {"customer_id": customer_id}
-            return customers.find_one(customer_query)
-        else:
-            raise UnsupportedDBTypeError
+    def get_customer(self, customer_id: str):
+        return self.collection.find_one({"customer_id": customer_id})
 
     def get_customers(self):
-        if self.db_type == "MONGODB":
-            customers = self.db.customers
+        return list(self.collection.find())
 
-            return list(customers.find())
-        else:
-            raise UnsupportedDBTypeError
+    def update_customer(self, customer_id: str, **new_assignments):
+        customer_query = {"customer_id": customer_id}
+        new_value = {
+            "$set": {}
+        }
+        for key, value in new_assignments.items():
+            new_value["$set"][key] = value
+        self.collection.update_one(customer_query, new_value)
 
-
-class InvalidCustomerInfoError(BaseException):
-    """Raised when a customer info is invalid"""
-
-
-class UnsupportedDBTypeError(BaseException):
-    """Raised if the current database type is not (yet) supported"""
+    def remove_customer(self, customer_id: str):
+        self.collection.delete_one({"customer_id": customer_id})
