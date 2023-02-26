@@ -57,8 +57,11 @@ def __parse_js_data(js_data: dict):
         ["imageModule", "imagePathList"], js_data)
 
     cleaned_data["prices"] = []
-    has_variants = len(Utils.get_value(
-        ["skuModule", "skuPriceList"], js_data)) > 1
+    try:
+        has_variants = len(Utils.get_value(
+            ["skuModule", "skuPriceList"], js_data)) > 1
+    except TypeError:
+        has_variants = False
 
     variant_data = (
         Utils.get_value(
