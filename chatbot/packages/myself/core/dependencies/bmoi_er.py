@@ -21,7 +21,7 @@ def get_exchange_rate():
             er_label = table_row.findAll("td")[1].text.replace(",", ".").replace(" ", "")
             if currency_label == "Euro":
                 exchange_rate["EUR"] = float(er_label)
-            elif currency_label == "DOLLAR (USA)":
+            elif currency_label == "DOLLAR (US)":
                 exchange_rate["USD"] = float(er_label)
         return exchange_rate
     raise Exception(f"Failed to fetch HTML page. {response.status_code} {response.reason_phrase}")
