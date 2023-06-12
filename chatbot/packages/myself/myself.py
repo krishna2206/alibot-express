@@ -38,4 +38,13 @@ def __ask_currency(recipient_id):
 
 
 def help_message(recipient_id):
-    pass
+    help_text = (
+        "Voici quelques astuces pour utiliser notre chatbot:\n"
+        "- Pour rechercher des produits, utilisez le bouton 🔎 Rechercher des produits.\n"
+        "- Pour voir votre panier, appuyez sur le bouton 🛒 Mon panier.\n"
+        "- Pour vérifier ou changer de devise, utilisez les boutons 🪙 Ma devise et 🪙 Changer de devise.\n"
+        "- Pour consulter le taux de change, appuyez sur le bouton 💱 Taux de change.\n"
+        "Si vous avez besoin d'aide supplémentaire, n'hésitez pas à nous envoyer un message."
+    )
+    send_api.send_text_message(help_text, recipient_id)
+
