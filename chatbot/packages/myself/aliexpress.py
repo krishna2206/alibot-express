@@ -390,12 +390,12 @@ def show_estimated_price(recipient_id: str):
         if product['shippingFee'] is not None:
             estimated_price_msg += f" 🚛 Frais de livraison : {product['shippingFee']} {display_currency}\n"
         if (product['deliveryDetails']['deliveryDayMin'] is not None) and (product['deliveryDetails']['deliveryDayMax'] is not None):
-            estimated_price_msg += f" 🚚 Durée estimée de livraison : {product['deliveryDetails']['deliveryDayMin']} - {product['deliveryDetails']['deliveryDayMax']} jours\n\n"
+            estimated_price_msg += f" 🚚 Durée estimée de livraison : {product['deliveryDetails']['deliveryDayMin']} - {product['deliveryDetails']['deliveryDayMax']} jours"
 
     total_price = round(total_price, 1)
     total_price_ariary = round(total_price * exchange_rate.get(customer.get('currency')), 1)
     estimated_price_msg += (
-        bold(f"🛒 Prix total du panier :\n") +
+        bold(f"\n\n🛒 Prix total du panier :\n") +
         f"{total_price} {display_currency} soit {total_price_ariary} Ariary\n")
 
     send_api.send_text_message(estimated_price_msg, recipient_id)
