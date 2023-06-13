@@ -387,8 +387,9 @@ def show_estimated_price(recipient_id: str):
         estimated_price_msg += f" 💰 Prix unitaire : {variant['promotionalPrice']} {display_currency}\n"
         estimated_price_msg += f" 🛍 Quantité : {cart_product['quantity']}\n"
         estimated_price_msg += f" 💰 Prix total : {round(variant['promotionalPrice'] * cart_product['quantity'], 1)} {display_currency}\n"
-        estimated_price_msg += f" 🚛 Frais de livraison : {product['shippingFee']} {display_currency}\n"
-        estimated_price_msg += f" 🚚 Durée estimée de livraison : {product['deliveryDetails']['deliveryDayMin']} - {product['deliveryDetails']['deliveryDayMax']} jours\n\n"
+        if product['shippingFee'] is not None:
+            estimated_price_msg += f" 🚛 Frais de livraison : {product['shippingFee']} {display_currency}\n"
+            estimated_price_msg += f" 🚚 Durée estimée de livraison : {product['deliveryDetails']['deliveryDayMin']} - {product['deliveryDetails']['deliveryDayMax']} jours\n\n"
 
     total_price = round(total_price, 1)
     total_price_ariary = round(total_price * exchange_rate.get(customer.get('currency')), 1)
