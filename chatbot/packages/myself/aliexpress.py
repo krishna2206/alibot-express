@@ -369,6 +369,9 @@ def show_estimated_price(recipient_id: str):
         else:
             variant = product["prices"][0]
 
+        print(
+            f"DEBUG: Promo price : {variant['promotionalPrice']}, Quantity : {cart_product['quantity']}, Shipping fee : {product['shippingFee']}"
+        )
         curr_total_price = variant["promotionalPrice"] * cart_product["quantity"] + product["shippingFee"]
         total_price += curr_total_price
         
