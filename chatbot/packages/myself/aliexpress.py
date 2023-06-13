@@ -369,13 +369,6 @@ def show_estimated_price(recipient_id: str):
         else:
             variant = product["prices"][0]
 
-        # send_api.send_text_message(
-        #     f"DEBUG: Promo price : {variant['promotionalPrice']}, Quantity : {cart_product['quantity']}, Shipping fee : {product['shippingFee']}",
-        #     recipient_id)
-        # send_api.send_text_message(
-        #     f"{product}",
-        #     recipient_id)
-
         if product["shippingFee"] is not None:
             curr_total_price = (variant["promotionalPrice"] * cart_product["quantity"]) + product["shippingFee"]
         else:
@@ -391,6 +384,9 @@ def show_estimated_price(recipient_id: str):
             estimated_price_msg += f" 🚛 Frais de livraison : {product['shippingFee']} {display_currency}\n"
         if (product['deliveryDetails']['deliveryDayMin'] is not None) and (product['deliveryDetails']['deliveryDayMax'] is not None):
             estimated_price_msg += f" 🚚 Durée estimée de livraison : {product['deliveryDetails']['deliveryDayMin']} - {product['deliveryDetails']['deliveryDayMax']} jours"
+        
+        if cart_product != cart[-1]:
+            estimated_price_msg += "\n\n"
 
     total_price = round(total_price, 1)
     total_price_ariary = round(total_price * exchange_rate.get(customer.get('currency')), 1)
