@@ -369,13 +369,18 @@ def show_estimated_price(recipient_id: str):
         else:
             variant = product["prices"][0]
 
-        send_api.send_text_message(
-            f"DEBUG: Promo price : {variant['promotionalPrice']}, Quantity : {cart_product['quantity']}, Shipping fee : {product['shippingFee']}",
-            recipient_id)
-        send_api.send_text_message(
-            f"{product}",
-            recipient_id)
-        curr_total_price = variant["promotionalPrice"] * cart_product["quantity"] + product["shippingFee"]
+        # send_api.send_text_message(
+        #     f"DEBUG: Promo price : {variant['promotionalPrice']}, Quantity : {cart_product['quantity']}, Shipping fee : {product['shippingFee']}",
+        #     recipient_id)
+        # send_api.send_text_message(
+        #     f"{product}",
+        #     recipient_id)
+
+        if product["shippingFee"] is not None:
+            curr_total_price = (variant["promotionalPrice"] * cart_product["quantity"]) + product["shippingFee"]
+        else:
+            curr_total_price = variant["promotionalPrice"] * cart_product["quantity"]
+
         total_price += curr_total_price
         
         estimated_price_msg += bold(f"• {product['title']} ({variant['variantName']}) :\n")
